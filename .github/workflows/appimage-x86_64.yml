@@ -26,7 +26,7 @@ jobs:
             libgl1-mesa-dev libfuse2t64 libxcb-cursor0
 
       - name: Fetch ReXGlue SDK
-        run: git clone --depth 1 --branch "${{ inputs.rexsdk_ref }}" "https://github.com/${{ inputs.rexsdk_repo }}.git" "$RUNNER_TEMP/rexglue-sdk"
+        run: git clone --depth 1 --recurse-submodules --shallow-submodules --branch "${{ inputs.rexsdk_ref }}" "https://github.com/${{ inputs.rexsdk_repo }}.git" "$RUNNER_TEMP/rexglue-sdk"
 
       - name: Build game and launcher
         run: |
