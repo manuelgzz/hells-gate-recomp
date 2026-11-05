@@ -82,9 +82,11 @@ updates when it opens.
 
 ### Linux
 
-- **x86-64:** build from source (see below), or run the Windows build under
-  Proton. The Proton path is documented in
-  [`docs/linux-cross-compile.md`](docs/linux-cross-compile.md).
+- **x86-64:** an AppImage can be built with the **AppImage x86-64** GitHub
+  Actions workflow or `packaging/appimage/build-appimage.sh` (see
+  [`packaging/appimage/README.md`](packaging/appimage/README.md)). You can
+  also build from source (see below) or run the Windows build under Proton
+  ([`docs/linux-cross-compile.md`](docs/linux-cross-compile.md)).
 - **ARM64:** a Qt launcher and AppImage are available; see
   [`packaging/appimage/README.md`](packaging/appimage/README.md).
 
