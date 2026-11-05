@@ -38,6 +38,26 @@ Artifact: `build/DantesInferno-aarch64.AppImage`.
 Override `DANTES_BIN`, `LAUNCHER_BIN`, `RUNTIME_LIB`, `GPU_LIB` or
 `EXTRACT_XISO_BIN` if the artifacts are in other locations.
 
+## x86-64
+
+`build-appimage.sh` detects the host architecture; `build-appimage-x86_64.sh`
+forces x86-64. Use the x86_64 builds of the tools and run it on an x86-64
+host:
+
+```bash
+LINUXDEPLOY=/path/to/linuxdeploy-x86_64.AppImage \
+APPIMAGETOOL=/path/to/appimagetool-x86_64.AppImage \
+PATH="/path/to/linuxdeploy-plugin-qt:$PATH" \
+packaging/appimage/build-appimage-x86_64.sh
+```
+
+Artifact: `build/DantesInferno-x86_64.AppImage`. `build-appimage-arm64.sh`
+is the equivalent for AArch64 (artifact `DantesInferno-aarch64.AppImage`).
+
+The **AppImage x86-64** workflow (Actions tab, *Run workflow*) builds it on
+`ubuntu-22.04` and uploads `DantesInferno-x86_64.AppImage` as an artifact. Set
+the ReXGlue SDK repository and ref inputs to match your SDK.
+
 ## Runtime
 
 On first launch, choose a writable root folder. The launcher creates:

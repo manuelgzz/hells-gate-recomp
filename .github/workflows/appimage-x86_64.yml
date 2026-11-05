@@ -1,0 +1,63 @@
+name: AppImage x86-64
+
+on:
+  workflow_dispatch:
+    inputs:
+      rexsdk_repo:
+        description: "ReXGlue SDK git repository (owner/name)"
+        required: true
+        default: "rexglue/rexglue-sdk"
+      rexsdk_ref:
+        description: "ReXGlue SDK ref"
+        required: true
+        default: "main"
+
+jobs:
+  appimage:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build git file \
+            qt6-base-dev qt6-base-dev-tools qt6-wayland libvulkan-dev \
+            libgl1-mesa-dev libfuse2 libxcb-cursor0
+
+      - name: Fetch ReXGlue SDK
+        run: git clone --depth 1 --branch "${{ inputs.rexsdk_ref }}" "https://github.com/${{ inputs.rexsdk_repo }}.git" "$RUNNER_TEMP/rexglue-sdk"
+
+      - name: Build game and launcher
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+            -DREXSDK_DIR="$RUNNER_TEMP/rexglue-sdk" \
+            -DDANTESINFERNO_BUILD_LAUNCHER=ON
+          cmake --build build --parallel --target dantes_inferno dantes_inferno_launcher
+
+      - name: Download packaging tools
+        run: |
+          mkdir -p "$RUNNER_TEMP/tools"
+          cd "$RUNNER_TEMP/tools"
+          base=https://github.com/linuxdeploy
+          curl -fsSL -o linuxdeploy "$base/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+          curl -fsSL -o linuxdeploy-plugin-qt "$base/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
+          curl -fsSL -o appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x linuxdeploy linuxdeploy-plugin-qt appimagetool
+          echo "$RUNNER_TEMP/tools" >> "$GITHUB_PATH"
+
+      - name: Package AppImage
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+          QMAKE: /usr/lib/qt6/bin/qmake6
+        run: |
+          LINUXDEPLOY="$RUNNER_TEMP/tools/linuxdeploy" \
+          APPIMAGETOOL="$RUNNER_TEMP/tools/appimagetool" \
+          packaging/appimage/build-appimage.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DantesInferno-x86_64.AppImage
+          path: build/DantesInferno-x86_64.AppImage
