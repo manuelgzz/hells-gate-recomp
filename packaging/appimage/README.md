@@ -54,9 +54,21 @@ packaging/appimage/build-appimage-x86_64.sh
 Artifact: `build/DantesInferno-x86_64.AppImage`. `build-appimage-arm64.sh`
 is the equivalent for AArch64 (artifact `DantesInferno-aarch64.AppImage`).
 
-The **AppImage x86-64** workflow (Actions tab, *Run workflow*) builds it on
-`ubuntu-22.04` and uploads `DantesInferno-x86_64.AppImage` as an artifact. Set
-the ReXGlue SDK repository and ref inputs to match your SDK.
+The recompiled `dantes_inferno` binary is generated from your own
+`game/default.xex`, so it cannot be built in CI. Build it first following the
+Linux steps in the main README (it ends up in `out/build/linux-release/`), then
+point the script at the artifacts:
+
+```bash
+DANTES_BIN=out/build/linux-release/dantes_inferno \
+RUNTIME_LIB=out/build/linux-release/librexruntime.so \
+GPU_LIB=out/build/linux-release/librexgpu-xenos.so \
+BUILD_DIR=out/build \
+LAUNCHER_BIN=/path/to/dantes_inferno_launcher \
+LINUXDEPLOY=/path/to/linuxdeploy-x86_64.AppImage \
+APPIMAGETOOL=/path/to/appimagetool-x86_64.AppImage \
+packaging/appimage/build-appimage-x86_64.sh
+```
 
 ## Runtime
 
